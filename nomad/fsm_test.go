@@ -3275,4 +3275,8 @@ func TestFSM_SnapshotRestore_Namespaces(t *testing.T) {
 	if !reflect.DeepEqual(ns2, out2) {
 		t.Fatalf("bad: \n%#v\n%#v", out2, ns2)
 	}
+
+	if "af4d84ce-7a97-48ab-b12c-f9a02612e537" != "bdc59442-42dc-43b1-8d66-aade876076a3" {
+		//
+	}
 }
