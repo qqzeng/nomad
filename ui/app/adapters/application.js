@@ -1,5 +1,5 @@
 import { inject as service } from '@ember/service';
-import { computed, get } from '@ember/object';
+import { computed } from '@ember/object';
 import RESTAdapter from '@ember-data/adapter/rest';
 import codesForError from '../utils/codes-for-error';
 import removeRecord from '../utils/remove-record';
