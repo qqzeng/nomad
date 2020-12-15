@@ -4,6 +4,7 @@ import { assert } from '@ember/debug';
 import { guidFor } from '@ember/object/internals';
 import { run } from '@ember/runloop';
 import d3Shape from 'd3-shape';
+// eslint-disable-next-line ember/no-mixins
 import WindowResizable from 'nomad-ui/mixins/window-resizable';
 import { classNames } from '@ember-decorators/component';
 import classic from 'ember-classic-decorator';

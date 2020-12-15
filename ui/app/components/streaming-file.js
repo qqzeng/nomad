@@ -1,6 +1,7 @@
 import Component from '@ember/component';
 import { run } from '@ember/runloop';
 import { task } from 'ember-concurrency';
+// eslint-disable-next-line ember/no-mixins
 import WindowResizable from 'nomad-ui/mixins/window-resizable';
 import { classNames, tagName } from '@ember-decorators/component';
 import classic from 'ember-classic-decorator';

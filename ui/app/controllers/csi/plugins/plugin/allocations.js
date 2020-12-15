@@ -2,6 +2,7 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { alias, readOnly } from '@ember/object/computed';
+// eslint-disable-next-line ember/no-mixins
 import SortableFactory from 'nomad-ui/mixins/sortable-factory';
 import { lazyClick } from 'nomad-ui/helpers/lazy-click';
 import { serialize, deserializedQueryParam as selection } from 'nomad-ui/utils/qp-serialize';

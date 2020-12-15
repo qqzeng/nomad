@@ -2,6 +2,7 @@ import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
 import { collect } from '@ember/object/computed';
 import { watchRelationship } from 'nomad-ui/utils/properties/watch';
+// eslint-disable-next-line ember/no-mixins
 import WithWatchers from 'nomad-ui/mixins/with-watchers';
 
 export default class DeploymentsRoute extends Route.extend(WithWatchers) {

@@ -2,6 +2,7 @@ import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { alias, readOnly } from '@ember/object/computed';
+// eslint-disable-next-line ember/no-mixins
 import Sortable from 'nomad-ui/mixins/sortable';
 import { classNames } from '@ember-decorators/component';
 import classic from 'ember-classic-decorator';

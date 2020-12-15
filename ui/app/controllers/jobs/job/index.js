@@ -1,6 +1,7 @@
 import { inject as service } from '@ember/service';
 import { alias } from '@ember/object/computed';
 import Controller from '@ember/controller';
+// eslint-disable-next-line ember/no-mixins
 import WithNamespaceResetting from 'nomad-ui/mixins/with-namespace-resetting';
 import { action } from '@ember/object';
 import classic from 'ember-classic-decorator';

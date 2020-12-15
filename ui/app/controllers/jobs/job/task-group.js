@@ -2,8 +2,11 @@ import { inject as service } from '@ember/service';
 import { alias, readOnly } from '@ember/object/computed';
 import Controller from '@ember/controller';
 import { action, computed, get } from '@ember/object';
+// eslint-disable-next-line ember/no-mixins
 import Sortable from 'nomad-ui/mixins/sortable';
+// eslint-disable-next-line ember/no-mixins
 import Searchable from 'nomad-ui/mixins/searchable';
+// eslint-disable-next-line ember/no-mixins
 import WithNamespaceResetting from 'nomad-ui/mixins/with-namespace-resetting';
 import classic from 'ember-classic-decorator';
 

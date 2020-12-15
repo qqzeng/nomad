@@ -4,7 +4,9 @@ import Controller from '@ember/controller';
 import { action, computed } from '@ember/object';
 import { observes } from '@ember-decorators/object';
 import { task } from 'ember-concurrency';
+// eslint-disable-next-line ember/no-mixins
 import Sortable from 'nomad-ui/mixins/sortable';
+// eslint-disable-next-line ember/no-mixins
 import Searchable from 'nomad-ui/mixins/searchable';
 import messageFromAdapterError from 'nomad-ui/utils/message-from-adapter-error';
 import classic from 'ember-classic-decorator';

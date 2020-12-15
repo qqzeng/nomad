@@ -9,6 +9,7 @@ import { copy } from 'ember-copy';
 import { computed as overridable } from 'ember-overridable-computed';
 import d3 from 'd3-selection';
 import 'd3-transition';
+// eslint-disable-next-line ember/no-mixins
 import WindowResizable from '../mixins/window-resizable';
 import styleStringProperty from '../utils/properties/style-string';
 import { classNames, classNameBindings } from '@ember-decorators/component';

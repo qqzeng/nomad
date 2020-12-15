@@ -2,6 +2,7 @@ import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import notifyError from 'nomad-ui/utils/notify-error';
 import { collect } from '@ember/object/computed';
+// eslint-disable-next-line ember/no-mixins
 import WithWatchers from 'nomad-ui/mixins/with-watchers';
 import { watchRecord, watchRelationship } from 'nomad-ui/utils/properties/watch';
 import classic from 'ember-classic-decorator';

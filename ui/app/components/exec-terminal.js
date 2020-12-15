@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { FitAddon } from 'xterm-addon-fit';
+// eslint-disable-next-line ember/no-mixins
 import WindowResizable from '../mixins/window-resizable';
 import { classNames } from '@ember-decorators/component';
 import classic from 'ember-classic-decorator';

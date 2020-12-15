@@ -1,5 +1,6 @@
 import { alias } from '@ember/object/computed';
 import Controller, { inject as controller } from '@ember/controller';
+// eslint-disable-next-line ember/no-mixins
 import Sortable from 'nomad-ui/mixins/sortable';
 
 export default class IndexController extends Controller.extend(Sortable) {

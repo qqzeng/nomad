@@ -11,6 +11,7 @@ import { serialize, deserializedQueryParam as selection } from 'nomad-ui/utils/q
 
 import EmberObject, { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
+// eslint-disable-next-line ember/no-mixins
 import Searchable from 'nomad-ui/mixins/searchable';
 import classic from 'ember-classic-decorator';
 

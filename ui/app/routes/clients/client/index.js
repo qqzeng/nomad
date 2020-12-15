@@ -2,6 +2,7 @@ import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import { collect } from '@ember/object/computed';
 import { watchRecord, watchRelationship } from 'nomad-ui/utils/properties/watch';
+// eslint-disable-next-line ember/no-mixins
 import WithWatchers from 'nomad-ui/mixins/with-watchers';
 
 export default class ClientRoute extends Route.extend(WithWatchers) {

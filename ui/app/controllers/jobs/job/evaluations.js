@@ -1,6 +1,8 @@
 import { alias } from '@ember/object/computed';
 import Controller from '@ember/controller';
+// eslint-disable-next-line ember/no-mixins
 import WithNamespaceResetting from 'nomad-ui/mixins/with-namespace-resetting';
+// eslint-disable-next-line ember/no-mixins
 import Sortable from 'nomad-ui/mixins/sortable';
 import classic from 'ember-classic-decorator';
 

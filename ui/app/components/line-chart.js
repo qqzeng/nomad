@@ -14,6 +14,7 @@ import d3Array from 'd3-array';
 import d3Shape from 'd3-shape';
 import d3Format from 'd3-format';
 import d3TimeFormat from 'd3-time-format';
+// eslint-disable-next-line ember/no-mixins
 import WindowResizable from 'nomad-ui/mixins/window-resizable';
 import styleStringProperty from 'nomad-ui/utils/properties/style-string';
 import { classNames, classNameBindings } from '@ember-decorators/component';

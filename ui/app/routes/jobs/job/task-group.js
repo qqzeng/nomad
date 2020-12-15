@@ -3,6 +3,7 @@ import { collect } from '@ember/object/computed';
 import EmberError from '@ember/error';
 import { resolve, all } from 'rsvp';
 import { watchRecord, watchRelationship } from 'nomad-ui/utils/properties/watch';
+// eslint-disable-next-line ember/no-mixins
 import WithWatchers from 'nomad-ui/mixins/with-watchers';
 import { qpBuilder } from 'nomad-ui/utils/classes/query-params';
 import notifyError from 'nomad-ui/utils/notify-error';

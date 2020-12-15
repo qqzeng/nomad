@@ -2,7 +2,9 @@ import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { alias, readOnly } from '@ember/object/computed';
 import Controller, { inject as controller } from '@ember/controller';
+// eslint-disable-next-line ember/no-mixins
 import SortableFactory from 'nomad-ui/mixins/sortable-factory';
+// eslint-disable-next-line ember/no-mixins
 import Searchable from 'nomad-ui/mixins/searchable';
 import { lazyClick } from 'nomad-ui/helpers/lazy-click';
 import classic from 'ember-classic-decorator';

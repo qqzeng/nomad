@@ -5,6 +5,7 @@ import EmberObject, { action, computed, set } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { debounce, run } from '@ember/runloop';
+// eslint-disable-next-line ember/no-mixins
 import Searchable from 'nomad-ui/mixins/searchable';
 import classic from 'ember-classic-decorator';
 
