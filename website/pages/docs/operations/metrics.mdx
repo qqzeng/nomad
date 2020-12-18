@@ -12,9 +12,7 @@ different libraries and subsystems. These metrics are aggregated on a ten
 second interval and are retained for one minute.
 
 This data can be accessed via an HTTP endpoint or via sending a signal to the
-Nomad process.
-
-As of Nomad version 0.7, this data is available via HTTP at `/metrics`. See
+Nomad process. This data is available via HTTP at `/metrics`. See
 [Metrics](/api-docs/metrics) for more information.
 
 To view this data via sending a signal to the Nomad process: on Unix,
@@ -70,197 +68,55 @@ Below is sample output of a telemetry dump:
 [2015-09-17 16:59:40 -0700 PDT][S] 'nomad.memberlist.gossip': Count: 12 Min: 0.009 Mean: 0.017 Max: 0.025 Stddev: 0.005 Sum: 0.204
 ```
 
+### Metric Types
+
+| Type    | Description                                                                                                         | Quantiles |
+|---------|---------------------------------------------------------------------------------------------------------------------|-----------|
+| Gauge   | Gauge types report an absolute number at the end of the aggregation interval                                        | false     |
+| Counter | Counts are incremented and flushed at the end of the aggregation interval and then are reset to zero                | true      |
+| Timer   | Timers measure the time to complete a task and will include quantiles, means, standard deviation, etc per interval. | true      |
+
+### Tagged Metrics
+
+Nomad emits metrics in a tagged format. Each metric can support more than one
+tag, meaning that it is possible to do a match over metrics for datapoints
+such as a particular datacenter, and return all metrics with this tag. Nomad
+supports labels for namespaces as well.
+
+
 ## Key Metrics
 
-When telemetry is being streamed to statsite or statsd, `interval` is defined to
-be their flush interval. Otherwise, the interval can be assumed to be 10 seconds
-when retrieving metrics using the above described signals.
+The metrics in the table below are the most important metrics for monitoring
+the overall health of a Nomad cluster.
 
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>nomad.runtime.num_goroutines</code>
-      </td>
-      <td>Number of goroutines and general load pressure indicator</td>
-      <td># of goroutines</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.runtime.alloc_bytes</code>
-      </td>
-      <td>Memory utilization</td>
-      <td># of bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.runtime.heap_objects</code>
-      </td>
-      <td>Number of objects on the heap. General memory pressure indicator</td>
-      <td># of heap objects</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.raft.apply</code>
-      </td>
-      <td>Number of Raft transactions</td>
-      <td>Raft transactions / `interval`</td>
-      <td>Counter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.raft.replication.appendEntries</code>
-      </td>
-      <td>Raft transaction commit time</td>
-      <td>ms / Raft Log Append</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.raft.leader.lastContact</code>
-      </td>
-      <td>
-        Time since last contact to leader. General indicator of Raft latency
-      </td>
-      <td>ms / Leader Contact</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.broker.total_ready</code>
-      </td>
-      <td>Number of evaluations ready to be processed</td>
-      <td># of evaluations</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.broker.total_unacked</code>
-      </td>
-      <td>Evaluations dispatched for processing but incomplete</td>
-      <td># of evaluations</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.broker.total_blocked</code>
-      </td>
-      <td>
-        Evaluations that are blocked until an existing evaluation for the same
-        job completes
-      </td>
-      <td># of evaluations</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.plan.queue_depth</code>
-      </td>
-      <td>Number of scheduler Plans waiting to be evaluated</td>
-      <td># of plans</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.plan.submit</code>
-      </td>
-      <td>
-        Time to submit a scheduler Plan. Higher values cause lower scheduling
-        throughput
-      </td>
-      <td>ms / Plan Submit</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.plan.evaluate</code>
-      </td>
-      <td>
-        Time to validate a scheduler Plan. Higher values cause lower scheduling
-        throughput. Similar to <code>nomad.plan.submit</code> but does not
-        include RPC time or time in the Plan Queue
-      </td>
-      <td>ms / Plan Evaluation</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.worker.invoke_scheduler.&lt;type&gt;</code>
-      </td>
-      <td>Time to run the scheduler of the given type</td>
-      <td>ms / Scheduler Run</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.worker.wait_for_index</code>
-      </td>
-      <td>
-        Time waiting for Raft log replication from leader. High delays result in
-        lower scheduling throughput
-      </td>
-      <td>ms / Raft Index Wait</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.heartbeat.active</code>
-      </td>
-      <td>
-        Number of active heartbeat timers. Each timer represents a Nomad Client
-        connection
-      </td>
-      <td># of heartbeat timers</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.heartbeat.invalidate</code>
-      </td>
-      <td>
-        The length of time it takes to invalidate a Nomad Client due to failed
-        heartbeats
-      </td>
-      <td>ms / Heartbeat Invalidation</td>
-      <td>Timer</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.rpc.query</code>
-      </td>
-      <td>Number of RPC queries</td>
-      <td>RPC Queries / `interval`</td>
-      <td>Counter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.rpc.request</code>
-      </td>
-      <td>Number of RPC requests being handled</td>
-      <td>RPC Requests / `interval`</td>
-      <td>Counter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.rpc.request_error</code>
-      </td>
-      <td>Number of RPC requests being handled that result in an error</td>
-      <td>RPC Errors / `interval`</td>
-      <td>Counter</td>
-    </tr>
-  </tbody>
-</table>
+When telemetry is being streamed to statsite or statsd, `interval` in the
+table below is defined to be their flush interval. Otherwise, the interval can
+be assumed to be 10 seconds when retrieving metrics using the above described
+signals.
+
+| Metrics                                      | Description                                                                                                                                                                | Unit                           | Type    |
+|-------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `nomad.runtime.alloc_bytes`                  | Memory utilization                                                                                                                                                         | # of bytes                     | Gauge   |
+| `nomad.runtime.heap_objects`                 | Number of objects on the heap. General memory pressure indicator                                                                                                           | # of heap objects              | Gauge   |
+| `nomad.runtime.num_goroutines`               | Number of goroutines and general load pressure indicator                                                                                                                   | # of goroutines                | Gauge   |
+| `nomad.nomad.broker.total_blocked`           | Evaluations that are blocked until an existing evaluation for the same job completes                                                                                       | # of evaluations               | Gauge   |
+| `nomad.nomad.broker.total_ready`             | Number of evaluations ready to be processed                                                                                                                                | # of evaluations               | Gauge   |
+| `nomad.nomad.broker.total_unacked`           | Evaluations dispatched for processing but incomplete                                                                                                                       | # of evaluations               | Gauge   |
+| `nomad.nomad.heartbeat.active`               | Number of active heartbeat timers. Each timer represents a Nomad Client connection                                                                                         | # of heartbeat timers          | Gauge   |
+| `nomad.nomad.heartbeat.invalidate`           | The length of time it takes to invalidate a Nomad Client due to failed heartbeats                                                                                          | ms / Heartbeat Invalidation    | Timer   |
+| `nomad.nomad.plan.evaluate`                  | Time to validate a scheduler Plan. Higher values cause lower scheduling throughput. Similar to `nomad.plan.submit` but does not include RPC time or time in the Plan Queue | ms / Plan Evaluation           | Timer   |
+| `nomad.nomad.plan.queue_depth`               | Number of scheduler Plans waiting to be evaluated                                                                                                                          | # of plans                     | Gauge   |
+| `nomad.nomad.plan.submit`                    | Time to submit a scheduler Plan. Higher values cause lower scheduling throughput                                                                                           | ms / Plan Submit               | Timer   |
+| `nomad.nomad.rpc.query`                      | Number of RPC queries                                                                                                                                                      | RPC Queries / `interval`       | Counter |
+| `nomad.nomad.rpc.request_error`              | Number of RPC requests being handled that result in an error                                                                                                               | RPC Errors / `interval`        | Counter |
+| `nomad.nomad.rpc.request`                    | Number of RPC requests being handled                                                                                                                                       | RPC Requests / `interval`      | Counter |
+| `nomad.nomad.worker.invoke_scheduler.<type>` | Time to run the scheduler of the given type                                                                                                                                | ms / Scheduler Run             | Timer   |
+| `nomad.nomad.worker.wait_for_index`          | Time waiting for Raft log replication from leader. High delays result in lower scheduling throughput                                                                       | ms / Raft Index Wait           | Timer   |
+| `nomad.raft.apply`                           | Number of Raft transactions                                                                                                                                                | Raft transactions / `interval` | Counter |
+| `nomad.raft.leader.lastContact`              | Time since last contact to leader. General indicator of Raft latency                                                                                                       | ms / Leader Contact            | Timer   |
+| `nomad.raft.replication.appendEntries`       | Raft transaction commit time                                                                                                                                               | ms / Raft Log Append           | Timer   |
+
+
 
 ## Client Metrics
 
@@ -284,852 +140,162 @@ and `periodic_id` are emitted, containing the ID of the specific invocation of t
 parameterized or periodic job respectively. For example, a dispatch job with the id
 `myjob/dispatch-1312323423423`, will have the following labels.
 
-<table>
-  <thead>
-    <tr>
-      <th>Label</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>job</td>
-      <td>
-        <code>myjob/dispatch-1312323423423</code>
-      </td>
-    </tr>
-    <tr>
-      <td>parent_id</td>
-      <td>myjob</td>
-    </tr>
-    <tr>
-      <td>dispatch_id</td>
-      <td>1312323423423</td>
-    </tr>
-  </tbody>
-</table>
+| Label       | Value                          |
+|-------------|--------------------------------|
+| job         | `myjob/dispatch-1312323423423` |
+| parent_id   | `myjob`                        |
+| dispatch_id | `1312323423423`                |
 
-## Host Metrics (post Nomad version 0.7)
 
-Starting in version 0.7, Nomad will emit [tagged metrics][tagged-metrics], in the below format:
+## Host Metrics
 
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Type</th>
-      <th>Labels</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.cpu</code>
-      </td>
-      <td>Total amount of CPU shares the scheduler has allocated to tasks</td>
-      <td>MHz</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.cpu</code>
-      </td>
-      <td>
-        Total amount of CPU shares free for the scheduler to allocate to tasks
-      </td>
-      <td>MHz</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.memory</code>
-      </td>
-      <td>Total amount of memory the scheduler has allocated to tasks</td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.memory</code>
-      </td>
-      <td>
-        Total amount of memory free for the scheduler to allocate to tasks
-      </td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.disk</code>
-      </td>
-      <td>Total amount of disk space the scheduler has allocated to tasks</td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.disk</code>
-      </td>
-      <td>
-        Total amount of disk space free for the scheduler to allocate to tasks
-      </td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.network</code>
-      </td>
-      <td>
-        Total amount of bandwidth the scheduler has allocated to tasks on the
-        given device
-      </td>
-      <td>Megabits</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, device</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.network</code>
-      </td>
-      <td>
-        Total amount of bandwidth free for the scheduler to allocate to tasks on
-        the given device
-      </td>
-      <td>Megabits</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, device</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.total</code>
-      </td>
-      <td>Total amount of physical memory on the node</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.available</code>
-      </td>
-      <td>
-        Total amount of memory available to processes which includes free and
-        cached memory
-      </td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.used</code>
-      </td>
-      <td>Amount of memory used by processes</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.free</code>
-      </td>
-      <td>Amount of memory which is free</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.uptime</code>
-      </td>
-      <td>Uptime of the host running the Nomad client</td>
-      <td>Seconds</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.total</code>
-      </td>
-      <td>Total CPU utilization</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, cpu</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.user</code>
-      </td>
-      <td>CPU utilization in the user space</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, cpu</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.system</code>
-      </td>
-      <td>CPU utilization in the system space</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, cpu</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.idle</code>
-      </td>
-      <td>Idle time spent by the CPU</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, cpu</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.disk.size</code>
-      </td>
-      <td>Total size of the device</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, disk</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.disk.used</code>
-      </td>
-      <td>Amount of space which has been used</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, disk</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.disk.available</code>
-      </td>
-      <td>Amount of space which is available</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, disk</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.disk.used_percent</code>
-      </td>
-      <td>Percentage of disk space used</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, disk</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.disk.inodes_percent</code>
-      </td>
-      <td>Disk space consumed by the inodes</td>
-      <td>Percent</td>
-      <td>Gauge</td>
-      <td>node_id, datacenter, disk</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.start</code>
-      </td>
-      <td>Number of allocations starting</td>
-      <td>Integer</td>
-      <td>Counter</td>
-      <td>node_id, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.running</code>
-      </td>
-      <td>Number of allocations starting to run</td>
-      <td>Integer</td>
-      <td>Counter</td>
-      <td>node_id, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.failed</code>
-      </td>
-      <td>Number of allocations failing</td>
-      <td>Integer</td>
-      <td>Counter</td>
-      <td>node_id, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.restart</code>
-      </td>
-      <td>Number of allocations restarting</td>
-      <td>Integer</td>
-      <td>Counter</td>
-      <td>node_id, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.complete</code>
-      </td>
-      <td>Number of allocations completing</td>
-      <td>Integer</td>
-      <td>Counter</td>
-      <td>node_id, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.destroy</code>
-      </td>
-      <td>Number of allocations being destroyed</td>
-      <td>Integer</td>
-      <td>Counter</td>
-      <td>node_id, job, task_group</td>
-    </tr>
-  </tbody>
-</table>
+Nomad will emit [tagged metrics][tagged-metrics], in the below format:
 
-Nomad 0.9 adds an additional `node_class` label from the client's
-`NodeClass` attribute. This label is set to the string "none" if empty.
-
-## Host Metrics (deprecated post Nomad 0.7)
-
-The below are metrics emitted by Nomad in versions prior to 0.7. These metrics
-can be emitted in the below format post-0.7 (as well as the new format,
-detailed above) but any new metrics will only be available in the new format.
-
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.cpu.&lt;HostID&gt;</code>
-      </td>
-      <td>Total amount of CPU shares the scheduler has allocated to tasks</td>
-      <td>MHz</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.cpu.&lt;HostID&gt;</code>
-      </td>
-      <td>
-        Total amount of CPU shares free for the scheduler to allocate to tasks
-      </td>
-      <td>MHz</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.memory.&lt;HostID&gt;</code>
-      </td>
-      <td>Total amount of memory the scheduler has allocated to tasks</td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.memory.&lt;HostID&gt;</code>
-      </td>
-      <td>
-        Total amount of memory free for the scheduler to allocate to tasks
-      </td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocated.disk.&lt;HostID&gt;</code>
-      </td>
-      <td>Total amount of disk space the scheduler has allocated to tasks</td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.unallocated.disk.&lt;HostID&gt;</code>
-      </td>
-      <td>
-        Total amount of disk space free for the scheduler to allocate to tasks
-      </td>
-      <td>Megabytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.allocated.network.&lt;Device-Name&gt;.&lt;HostID&gt;
-        </code>
-      </td>
-      <td>
-        Total amount of bandwidth the scheduler has allocated to tasks on the
-        given device
-      </td>
-      <td>Megabits</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.unallocated.network.&lt;Device-Name&gt;.&lt;HostID&gt;
-        </code>
-      </td>
-      <td>
-        Total amount of bandwidth free for the scheduler to allocate to tasks on
-        the given device
-      </td>
-      <td>Megabits</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.&lt;HostID&gt;.total</code>
-      </td>
-      <td>Total amount of physical memory on the node</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.&lt;HostID&gt;.available</code>
-      </td>
-      <td>
-        Total amount of memory available to processes which includes free and
-        cached memory
-      </td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.&lt;HostID&gt;.used</code>
-      </td>
-      <td>Amount of memory used by processes</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.memory.&lt;HostID&gt;.free</code>
-      </td>
-      <td>Amount of memory which is free</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.uptime.&lt;HostID&gt;</code>
-      </td>
-      <td>Uptime of the host running the Nomad client</td>
-      <td>Seconds</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.&lt;HostID&gt;.&lt;CPU-Core&gt;.total</code>
-      </td>
-      <td>Total CPU utilization</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.&lt;HostID&gt;.&lt;CPU-Core&gt;.user</code>
-      </td>
-      <td>CPU utilization in the user space</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.host.cpu.&lt;HostID&gt;.&lt;CPU-Core&gt;.system
-        </code>
-      </td>
-      <td>CPU utilization in the system space</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.host.cpu.&lt;HostID&gt;.&lt;CPU-Core&gt;.idle</code>
-      </td>
-      <td>Idle time spent by the CPU</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.host.disk.&lt;HostID&gt;.&lt;Device-Name&gt;.size
-        </code>
-      </td>
-      <td>Total size of the device</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.host.disk.&lt;HostID&gt;.&lt;Device-Name&gt;.used
-        </code>
-      </td>
-      <td>Amount of space which has been used</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.host.disk.&lt;HostID&gt;.&lt;Device-Name&gt;.available
-        </code>
-      </td>
-      <td>Amount of space which is available</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.host.disk.&lt;HostID&gt;.&lt;Device-Name&gt;.used_percent
-        </code>
-      </td>
-      <td>Percentage of disk space used</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>
-          nomad.client.host.disk.&lt;HostID&gt;.&lt;Device-Name&gt;.inodes_percent
-        </code>
-      </td>
-      <td>Disk space consumed by the inodes</td>
-      <td>Percent</td>
-      <td>Gauge</td>
-    </tr>
-  </tbody>
-</table>
+| Metric                                  | Description                                                                         | Unit       | Type  | Labels                                                                                |
+|-----------------------------------------|-------------------------------------------------------------------------------------|------------|-------|---------------------------------------------------------------------------------------|
+| `nomad.client.allocated.cpu`            | Total amount of CPU shares the scheduler has allocated to tasks                     | Mhz        | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocated.memory`         | Total amount of memory the scheduler has allocated to tasks                         | Megabytes  | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocated_disk`           | Total amount of disk space the scheduler has allocated to tasks                     | Megabytes  | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocations.blocked`      | Number of allocations blocked                                                       | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocations.migrating`    | Number of allocations migrating                                                     | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocations.pending`      | Number of allocations pending                                                       | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocations.running`      | Number of allocations running                                                       | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocations.start`        | Number of allocations starting                                                      | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocations.terminal`     | Number of allocations terminal                                                      | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.allocs.oom_killed`        | Number of allocations OOM killed                                                    | Integer    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.host.cpu.idle`            | CPU utilization in idle state                                                       | Percentage | Gauge | cpu, datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status  |
+| `nomad.client.host.cpu.system`          | CPU utilization in system space                                                     | Percentage | Gauge | cpu, datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status  |
+| `nomad.client.host.cpu.total`           | Total CPU utilization                                                               | Percentage | Gauge | cpu, datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status  |
+| `nomad.client.host.cpu.user`            | CPU utilization in user space                                                       | Percentage | Gauge | cpu, datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status  |
+| `nomad.client.host.disk.available`      | Amount of space which is available                                                  | Bytes      | Gauge | datacenter, disk, host, node_class, node_id, node_scheduling_eligibility, node_status |
+| `nomad.client.host.disk.inodes_percent` | Disk space consumed by the inodes                                                   | Percentage | Gauge | datacenter, disk, host, node_class, node_id, node_scheduling_eligibility, node_status |
+| `nomad.client.host.disk.size`           | Total size of the device                                                            | Bytes      | Gauge | datacenter, disk, host, node_class, node_id, node_scheduling_eligibility, node_status |
+| `nomad.client.host.disk.used_percent`   | Percentage of disk space used                                                       | Percentage | Gauge | datacenter, disk, host, node_class, node_id, node_scheduling_eligibility, node_status |
+| `nomad.client.host.disk.used`           | Amount of space which has been used                                                 | Bytes      | Gauge | datacenter, disk, host, node_class, node_id, node_scheduling_eligibility, node_status |
+| `nomad.client.host.memory.available`    | Total amount of memory available to processes which includes free and cached memory | Bytes      | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.host.memory.free`         | Amount of memory which is free                                                      | Bytes      | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.host.memory.total`        | Total amount of physical memory on the node                                         | Bytes      | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.host.memory.used`         | Amount of memory used by processes                                                  | Bytes      | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.unallocated.cpu`          | Total amount of CPU shares free for the scheduler to allocate to tasks              | Mhz        | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.unallocated.disk`         | Total amount of disk space free for the scheduler to allocate to tasks              | Megabytes  | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.unallocated_memory`       | Total amount of memory free for the scheduler to allocate to tasks                  | Bytes      | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
+| `nomad.client.uptime`                   | Uptime of the host running the Nomad client                                         | Seconds    | Gauge | datacenter, host, node_class, node_id, node_scheduling_eligibility, node_status       |
 
 ## Allocation Metrics
 
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Type</th>
-      <th>Labels</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.allocated</code>
-      </td>
-      <td>Amount of memory allocated by the task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.rss</code>
-      </td>
-      <td>Amount of RSS memory consumed by the task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.cache</code>
-      </td>
-      <td>Amount of memory cached by the task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.swap</code>
-      </td>
-      <td>Amount of memory swapped by the task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.usage</code>
-      </td>
-      <td>Total amount of memory used by the task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.max_usage</code>
-      </td>
-      <td>Maximum amount of memory ever used by the task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.kernel_usage</code>
-      </td>
-      <td>Amount of memory used by the kernel for this task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.memory.kernel_max_usage</code>
-      </td>
-      <td>Maximum amount of memory ever used by the kernel for this task</td>
-      <td>Bytes</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.allocated</code>
-      </td>
-      <td>Total CPU resources allocated by the task across all cores</td>
-      <td>MHz</td>
-      <td>Gauge</td>
-      <td>alloc_id, host, job, namespace, task, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.total_percent</code>
-      </td>
-      <td>Total CPU resources consumed by the task across all cores</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>alloc_id, task, namespace, host, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.system</code>
-      </td>
-      <td>Total CPU resources consumed by the task in the system space</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>alloc_id, task, namespace, host, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.user</code>
-      </td>
-      <td>Total CPU resources consumed by the task in the user space</td>
-      <td>Percentage</td>
-      <td>Gauge</td>
-      <td>alloc_id, task, namespace, host, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.throttled_time</code>
-      </td>
-      <td>Total time that the task was throttled</td>
-      <td>Nanoseconds</td>
-      <td>Gauge</td>
-      <td>alloc_id, task, namespace, host, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.throttled_periods</code>
-      </td>
-      <td>Total number of CPU periods that the task was throttled</td>
-      <td>Nanoseconds</td>
-      <td>Gauge</td>
-      <td>alloc_id, task, namespace, host, job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.client.allocs.cpu.total_ticks</code>
-      </td>
-      <td>CPU ticks consumed by the process in the last collection interval</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>alloc_id, task, namespace, host, job, task_group</td>
-    </tr>
-  </tbody>
-</table>
+The following metrics are emitted for each allocation if allocation metrics
+are enabled. Note that allocation metrics available may be dependent on the
+task driver; not all task drivers can provide all metrics.
+
+| Metric                                        | Description                                                       | Unit        | Type  | Labels                                           |
+|-----------------------------------------------|-------------------------------------------------------------------|-------------|-------|--------------------------------------------------|
+| `nomad.client.allocs.cpu.allocated`           | Total CPU resources allocated by the task across all cores        | MHz         | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.cpu.system`              | Total CPU resources consumed by the task in system space          | Percentage  | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.cpu.throttled_periods`   | Total number of CPU periods that the task was throttled           | Nanoseconds | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.cpu.throttled_time`      | Total time that the task was throttled                            | Nanoseconds | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.cpu.total_percent`       | Total CPU resources consumed by the task across all cores         | Percentage  | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.cpu.total_ticks`         | CPU ticks consumed by the process in the last collection interval | Integer     | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.cpu.user`                | Total CPU resources consumed by the task in the user space        | Percentage  | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.allocated`        | Amount of memory allocated by the task                            | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.cache`            | Amount of memory cached by the task                               | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.kernel_max_usage` | Maximum amount of memory ever used by the kernel for this task    | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.kernel_usage`     | Amount of memory used by the kernel for this task                 | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.max_usage`        | Maximum amount of memory ever used by the task                    | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.rss`              | Amount of RSS memory consumed by the task                         | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.swap`             | Amount of memory swapped by the task                              | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
+| `nomad.client.allocs.memory.usage`            | Total amount of memory used by the task                           | Bytes       | Gauge | alloc_id, host, job, namespace, task, task_group |
 
 ## Job Summary Metrics
 
 Job summary metrics are emitted by the Nomad leader server.
 
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Type</th>
-      <th>Labels</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>nomad.job_summary.queued</code>
-      </td>
-      <td>Number of queued allocations for a job</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_summary.complete</code>
-      </td>
-      <td>Number of complete allocations for a job</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_summary.failed</code>
-      </td>
-      <td>Number of failed allocations for a job</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_summary.running</code>
-      </td>
-      <td>Number of running allocations for a job</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_summary.starting</code>
-      </td>
-      <td>Number of starting allocations for a job</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>job, task_group</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_summary.lost</code>
-      </td>
-      <td>Number of lost allocations for a job</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-      <td>job, task_group</td>
-    </tr>
-  </tbody>
-</table>
+| Metric                             | Description                              | Unit    | Type  | Labels                           |
+|------------------------------------|------------------------------------------|---------|-------|----------------------------------|
+| `nomad.nomad.job_summary.complete` | Number of complete allocations for a job | Integer | Gauge | host, job, namespace, task_group |
+| `nomad.nomad.job_summary.failed`   | Number of failed allocations for a job   | Integer | Gauge | host, job, namespace, task_group |
+| `nomad.nomad.job_summary.lost`     | Number of lost allocations for a job     | Integer | Gauge | host, job, namespace, task_group |
+| `nomad.nomad.job_summary.queued`   | Number of queued allocations for a job   | Integer | Gauge | host, job, namespace, task_group |
+| `nomad.nomad.job_summary.running`  | Number of running allocations for a job  | Integer | Gauge | host, job, namespace, task_group |
+| `nomad.nomad.job_summary.starting` | Number of starting allocations for a job | Integer | Gauge | host, job, namespace, task_group |
 
 ## Job Status Metrics
 
 Job status metrics are emitted by the Nomad leader server.
 
-<table>
-  <thead>
-    <tr>
-      <th>Metric</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>nomad.job_status.pending</code>
-      </td>
-      <td>Number jobs pending</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_status.running</code>
-      </td>
-      <td>Number jobs running</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-    </tr>
-    <tr>
-      <td>
-        <code>nomad.job_status.dead</code>
-      </td>
-      <td>Number of dead jobs</td>
-      <td>Integer</td>
-      <td>Gauge</td>
-    </tr>
-  </tbody>
-</table>
+| Metric                           | Description            | Unit    | Type  | Labels |
+|----------------------------------|------------------------|---------|-------|--------|
+| `nomad.nomad.job_status.dead`    | Number of dead jobs    | Integer | Gauge | host   |
+| `nomad.nomad.job_status.pending` | Number of pending jobs | Integer | Gauge | host   |
+| `nomad.nomad.job_status.running` | Number of running jobs | Integer | Gauge | host   |
 
-## Metric Types
+## Server Metrics
 
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Quantiles</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Gauge</td>
-      <td>
-        Gauge types report an absolute number at the end of the aggregation
-        interval
-      </td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td>Counter</td>
-      <td>
-        Counts are incremented and flushed at the end of the aggregation
-        interval and then are reset to zero
-      </td>
-      <td>true</td>
-    </tr>
-    <tr>
-      <td>Timer</td>
-      <td>
-        Timers measure the time to complete a task and will include quantiles,
-        means, standard deviation, etc per interval.
-      </td>
-      <td>true</td>
-    </tr>
-  </tbody>
-</table>
+The following table includes metrics for overall cluster health in addition to
+those listed in [Key Metrics](#key-metrics) above.
 
-## Tagged Metrics
+| Metric                                            | Description                  | Unit                 | Type    | Labels |
+|---------------------------------------------------|------------------------------|----------------------|---------|--------|
+| `nomad.memberlist.gossip`                         | ?                            | Float                | Summary | host   |
+| `nomad.nomad.alloc.get_alloc`                     | ?                            | Float                | Summary | host   |
+| `nomad.nomad.alloc.get_allocs`                    | ?                            | Float                | Summary | host   |
+| `nomad.nomad.alloc.list`                          | ?                            | Float                | Summary | host   |
+| `nomad.nomad.blocked_evals.total_blocked`         | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.blocked_evals.total_escaped`         | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.blocked_evals.total_quota_limit`     | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.broker.service_ready`                | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.broker.service_unacked`              | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.broker.total_waiting`                | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.client.get_client_allocs`            | ?                            | Float                | Summary | host   |
+| `nomad.nomad.client.update_alloc`                 | ?                            | Float                | Summary | host   |
+| `nomad.nomad.client.update_status`                | ?                            | Float                | Summary | host   |
+| `nomad.nomad.eval.ack`                            | ?                            | Float                | Summary | host   |
+| `nomad.nomad.eval.allocations`                    | ?                            | Float                | Summary | host   |
+| `nomad.nomad.eval.create`                         | ?                            | Float                | Summary | host   |
+| `nomad.nomad.eval.dequeue`                        | ?                            | Float                | Summary | host   |
+| `nomad.nomad.eval.get_eval`                       | ?                            | Float                | Summary | host   |
+| `nomad.nomad.eval.update`                         | ?                            | Float                | Summary | host   |
+| `nomad.nomad.fsm.alloc_client_update`             | ?                            | Float                | Summary | host   |
+| `nomad.nomad.fsm.alloc_update_desired_transition` | ?                            | Float                | Summary | host   |
+| `nomad.nomad.fsm.apply_plan_results`              | ?                            | Float                | Summary | host   |
+| `nomad.nomad.fsm.register_job`                    | ?                            | Float                | Summary | host   |
+| `nomad.nomad.fsm.update_eval`                     | ?                            | Float                | Summary | host   |
+| `nomad.nomad.job.register`                        | ?                            | Float                | Summary | host   |
+| `nomad.nomad.leader.barrier`                      | ?                            | Integer              | Summary | host   |
+| `nomad.nomad.leader.reconcileMember`              | ?                            | Integer              | Summary | host   |
+| `nomad.nomad.leader.reconcile`                    | ?                            | Integer              | Summary | host   |
+| `nomad.nomad.plan.apply`                          | ?                            | Integer              | Summary | host   |
+| `nomad.nomad.plan.evaluate`                       | ?                            | Float                | Summary | host   |
+| `nomad.nomad.plan.queue_depth`                    | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.plan.submit`                         | ?                            | Float                | Summary | host   |
+| `nomad.nomad.plan.wait_for_index`                 | ?                            | Integer              | Summary | host   |
+| `nomad.nomad.vault.distributed_tokens_revoking`   | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.vault.token_ttl`                     | ?                            | Integer              | Gauge   | host   |
+| `nomad.nomad.worker.create_eval`                  | ?                            | Float                | Summary | host   |
+| `nomad.nomad.worker.dequeue_eval`                 | ?                            | Float                | Summary | host   |
+| `nomad.nomad.worker.invoke_scheduler_service`     | ?                            | Float                | Summary | host   |
+| `nomad.nomad.worker.send_ack`                     | ?                            | Float                | Summary | host   |
+| `nomad.nomad.worker.submit_plan`                  | ?                            | Float                | Summary | host   |
+| `nomad.nomad.worker.update_eval`                  | ?                            | Float                | Summary | host   |
+| `nomad.nomad.worker.wait_for_index`               | ?                            | Float                | Summary | host   |
+| `nomad.raft.appliedIndex`                         | ?                            | Integer              | Gauge   | host   |
+| `nomad.raft.barrier`                              | ?                            | Integer              | Counter | host   |
+| `nomad.raft.commitNumLogs`                        | ?                            | Integer              | Gauge   | host   |
+| `nomad.raft.commitTime`                           | ?                            | Float                | Summary | host   |
+| `nomad.raft.fsm.apply`                            | ?                            | Float                | Summary | host   |
+| `nomad.raft.fsm.enqueue`                          | ?                            | Float                | Summary | host   |
+| `nomad.raft.lastIndex`                            | ?                            | Integer              | Gauge   | host   |
+| `nomad.raft.leader.dispatchLog`                   | ?                            | Float                | Summary | host   |
+| `nomad.raft.leader.dispatchNumLogs`               | ?                            | Integer              | Gauge   | host   |
+| `nomad.raft.replication.appendEntries`            | Raft transaction commit time | ms / Raft Log Append | Timer   |        |
+| `nomad.runtime.free_count`                        | ?                            | Integer              | Gauge   | host   |
+| `nomad.runtime.gc_pause_ns`                       | ?                            | Nanoseconds          | Summary | host   |
+| `nomad.runtime.sys_bytes`                         | ?                            | # of bytes           | Gauge   | host   |
+| `nomad.runtime.total_gc_pause_ns`                 | ?                            | Nanoseconds          | Gauge   | host   |
+| `nomad.runtime.total_gc_runs`                     | ?                            | Integer              | Gauge   | host   |
+| `nomad.serf.queue.Event`                          | ?                            | Integer              | Summary | host   |
+| `nomad.serf.queue.Intent`                         | ?                            | Integer              | Summary | host   |
+| `nomad.serf.queue.Query`                          | ?                            | Integer              | Summary | host   |
+| `nomad.state.snapshotIndex`                       | ?                            | Integer              | Gauge   | host   |
 
-As of version 0.7, Nomad will start emitting metrics in a tagged format. Each
-metric can support more than one tag, meaning that it is possible to do a
-match over metrics for datapoints such as a particular datacenter, and return
-all metrics with this tag. Nomad supports labels for namespaces as well.
 
 [tagged-metrics]: /docs/telemetry/metrics#tagged-metrics
