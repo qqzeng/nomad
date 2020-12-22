@@ -1,0 +1,153 @@
+{
+  "features": [
+    {
+      "textSplit": {
+        "heading": "Container Orchestration",
+        "content": "Deploy, manage, and scale your containers with the Docker, Podman, or Singularity task driver.",
+        "textSide": "right",
+        "links": [
+          {
+            "text": "Read More",
+            "url": "https://learn.hashicorp.com/collections/nomad/manage-jobs",
+            "type": "outbound"
+          }
+        ]
+      },
+      "codeBlock": {
+        "options": { "showWindowBar": true },
+        "language": "hcl",
+        "code": "task \"webservice\" {\n  driver = \"docker\"\n  config {\n    image = \"redis:3.2\"\n    labels {\n      group = \"webservice-cache\"\n    }\n  }\n}\n"
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Run On-Premise with Ease",
+        "content": "Install and run Nomad easily on bare metal as a single binary and with the same ease as on cloud."
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677608-on-prem-with-ease.svg",
+        "alt": ""
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Windows Support",
+        "content": "Deploy Windows containers and processes or run Nomad as a native Windows service with Service Control Manager and NSSM.",
+        "textSide": "right",
+        "links": [
+          {
+            "text": "Watch Jet.com use case",
+            "url": "https://www.hashicorp.com/resources/running-windows-microservices-on-nomad-at-jet-com",
+            "type": "outbound"
+          }
+        ]
+      },
+      "codeBlock": {
+        "options": { "showWindowBar": true },
+        "code": "sc.exe start \"Nomad\"\nSERVICE_NAME: Nomad\n      TYPE               : 10  WIN32_OWN_PROCESS\n      STATE              : 4  RUNNING\n                              (STOPPABLE, NOT_PAUSABLE, ACCEPTS_SHUTDOWN)\n      WIN32_EXIT_CODE    : 0  (0x0)\n      SERVICE_EXIT_CODE  : 0  (0x0)\n      CHECKPOINT         : 0x0\n      WAIT_HINT          : 0x0\n      PID                : 8008\n      FLAGS              :\n"
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Multi-Region Federation",
+        "content": "Federate Nomad clusters across regions with a single CLI command to deploy applications globally.",
+        "links": [
+          {
+            "text": "Read more",
+            "url": "https://learn.hashicorp.com/tutorials/nomad/federation",
+            "type": "outbound"
+          }
+        ]
+      },
+      "codeBlock": {
+        "options": { "showWindowBar": true },
+        "language": "shell-session",
+        "code": "$ nomad server join 1.2.3.4:4648"
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Edge Deployment with Simple Topology",
+        "content": "Deploy Nomad with a simple cluster topology on hybrid infrastructure to place workloads to the cloud or at the edge.",
+        "textSide": "right"
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677612-edge-deployment-with-border.svg",
+        "alt": ""
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Zero Downtime Deployments",
+        "content": "Achieve zero downtime deployments for applications through rolling updates, blue/green, or canary deployment strategies.",
+        "links": [
+          {
+            "text": "Read more",
+            "url": "https://learn.hashicorp.com/collections/nomad/job-updates",
+            "type": "outbound"
+          }
+        ]
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677615-zero-downtime-deployments.png",
+        "alt": "Zero Downtime Deployments"
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "High Performance Batch Workloads",
+        "content": "Run batch jobs with proven scalability of thousands of deployments per second via the batch scheduler.",
+        "textSide": "right",
+        "links": [
+          {
+            "text": "Watch tech presentation from Citadel",
+            "url": "https://www.hashicorp.com/resources/end-to-end-production-nomad-citadel",
+            "type": "outbound"
+          }
+        ]
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677620-high-performance-batch-workloads-with-border.png",
+        "alt": ""
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Run Specialized Hardware with Device Plugins",
+        "content": "Run GPU and other specialized workloads using Nomad’s device plugins.",
+        "links": [
+          {
+            "text": "Read more",
+            "url": "/docs/devices",
+            "type": "inbound"
+          }
+        ]
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677628-specialized-hardware.png",
+        "alt": "Specialized Hardware"
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Run Stateful Workloads",
+        "content": "Natively connect and run stateful services with storage volumes from third-party providers via the Container Storage Interface plugin system.",
+        "textSide": "right"
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677632-csi.svg",
+        "alt": "Stateful Workloads"
+      }
+    },
+    {
+      "textSplit": {
+        "heading": "Flexible Networking Capabilities",
+        "content": "Deploy containerized applications with customized network configurations from third-party vendors via Container Network Interface plugin system"
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/2885/1608677635-cni.svg",
+        "alt": "Flexible Networking Capabilities"
+      }
+    }
+  ]
+}
