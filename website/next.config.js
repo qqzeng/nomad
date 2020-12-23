@@ -8,7 +8,7 @@ dotenv.config()
 
 module.exports = withHashicorp({
   defaultLayout: true,
-  transpileModules: ['is-absolute-url', '@hashicorp/react-.*'],
+  transpileModules: ['is-absolute-url'],
   mdx: { resolveIncludes: path.join(__dirname, 'pages/partials') },
 })({
   redirects() {
