@@ -591,6 +591,7 @@ func (c *Command) AutocompleteArgs() complete.Predictor {
 	return nil
 }
 
+// nomad run 命令入口
 func (c *Command) Run(args []string) int {
 	c.Ui = &cli.PrefixedUi{
 		OutputPrefix: "==> ",
