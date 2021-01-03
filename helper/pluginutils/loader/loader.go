@@ -16,6 +16,8 @@ import (
 	"github.com/hashicorp/nomad/plugins/shared/hclspec"
 )
 
+
+// PluginCatalog 检索外部和内部的插件
 // PluginCatalog is used to retrieve plugins, either external or internal
 type PluginCatalog interface {
 	// Dispense returns the plugin given its name and type. This will also
@@ -30,6 +32,7 @@ type PluginCatalog interface {
 }
 
 // InternalPluginConfig is used to configure launching an internal plugin.
+// 包括如何启动一个内部插件的配置信息
 type InternalPluginConfig struct {
 	Config  map[string]interface{}
 	Factory plugins.PluginCtxFactory

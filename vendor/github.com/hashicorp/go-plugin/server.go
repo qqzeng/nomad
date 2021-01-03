@@ -215,6 +215,7 @@ func Serve(opts *ServeConfig) {
 		fmt.Fprintf(os.Stderr, "Error preparing plugin: %s\n", err)
 		os.Exit(1)
 	}
+
 	stderr_r, stderr_w, err := os.Pipe()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error preparing plugin: %s\n", err)

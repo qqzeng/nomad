@@ -10,11 +10,13 @@ import (
 
 var (
 	// catalog is the set of registered internal plugins
+	// 已注册的内部插件
 	catalog = map[loader.PluginID]*Registration{}
 	mu      sync.Mutex
 )
 
 // Registration is the registration of an internal plugin
+// 表示内部插件的注册对象
 type Registration struct {
 	Config       *loader.InternalPluginConfig
 	ConfigLoader ConfigFromOptions

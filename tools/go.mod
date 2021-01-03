@@ -19,6 +19,7 @@ require (
 	github.com/onsi/gomega v1.9.0 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/tools v0.0.0-20200502202811-ed308ab3e770 // indirect
+	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 	gotest.tools/gotestsum v0.4.2

@@ -467,6 +467,9 @@ func (c *Command) setupAgent(config *Config, logger hclog.InterceptLogger, logOu
 	c.agent = agent
 
 	// Setup the HTTP server
+	// 引导 HTTP 连接配置。
+	// 包括创建 http 连接监听，是否启用 TLS，设置各个对象的各个操作的请求处理器，
+	// 最后设置 handshakeTimeout, maxConns 两个参数
 	http, err := NewHTTPServer(agent, config)
 	if err != nil {
 		agent.Shutdown()
@@ -592,6 +595,11 @@ func (c *Command) AutocompleteArgs() complete.Predictor {
 }
 
 // nomad run 命令入口
+// 1. 读取配置文件
+// 2. 创建日志
+// 3. 引导 agent
+// 4. 开启加入其它 agent 的过程
+// 5. 开启自动加入其它 agent 的过程
 func (c *Command) Run(args []string) int {
 	c.Ui = &cli.PrefixedUi{
 		OutputPrefix: "==> ",

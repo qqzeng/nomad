@@ -9,6 +9,10 @@ import (
 )
 
 // setupPlugins is used to setup the plugin loaders.
+// setupPlugins 配置插件加载器
+// 1. 获取内部插件配置集合
+// 2. 配置并实例化插件加载器，在其中会配置并加载内部和外部插件
+// 3. 创建插件加载器的单例化实例，其保证一次只加载一个外部插件，即对于同一个插件配置只存在一个实例
 func (a *Agent) setupPlugins() error {
 	// Get our internal plugins
 	internal, err := a.internalPluginConfigs()

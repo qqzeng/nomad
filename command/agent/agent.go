@@ -118,10 +118,14 @@ func NewAgent(config *Config, logger log.InterceptLogger, logOutput io.Writer, i
 	// Global logger should match internal logger as much as possible
 	golog.SetFlags(golog.LstdFlags | golog.Lmicroseconds)
 
+	// 引导 Consul 配置。
+	// 包括创建 Consul client、catalog（服务发现） & acl（token 管理，访问鉴权） & service client（服务公告与检查）
+	// 最后后台启动服务信息同步循环
 	if err := a.setupConsul(config.Consul); err != nil {
 		return nil, fmt.Errorf("Failed to initialize Consul client: %v", err)
 	}
 
+	// 引导 nomad agent plugin 加载器。
 	if err := a.setupPlugins(); err != nil {
 		return nil, err
 	}
@@ -820,6 +824,11 @@ LOAD:
 }
 
 // setupClient is used to setup the client if enabled
+// setupClient　引导 client。
+// 1. 利用 agent 配置，生成 client 配置
+// 2. 通过创建或打开已有的 boltdb 存储的数据文件来配置 client 的持久化存储
+// 3.
+// 4. 在 Consul 中创建并注册 Nomad client 服务（并注册对应的 agent 健康检查服务）
 func (a *Agent) setupClient() error {
 	if !a.config.Client.Enabled {
 		return nil
